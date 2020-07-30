@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ################################
 # Core functions for PTF
 ################################
@@ -8,16 +9,14 @@ import select
 import readline
 import glob
 import platform
-import urllib
+import urllib.request
 import sys
 
 # tab completion
 def complete(text, state):
-    a = (glob.glob(text + '*') + [None])[state].replace("__init__.py", "").replace(".py", "").replace("LICENSE", "").replace(
-        "README.md", "").replace("config", "").replace("ptf", "").replace("readme", "").replace("src", "").replace("         ", "") + "/"
+    a = (glob.glob(text + '*') + [None])[state].replace("__init__.py", "").replace(".py", "").replace("LICENSE", "").replace("README.md", "").replace("config", "").replace("ptf", "").replace("readme", "").replace("src", "").replace("         ", "").replace(".txt","") + "/"
     a = a.replace("//", "/")
-    if os.path.isfile(a[:-1] + ".py"):
-        return a[:-1]
+    if os.path.isfile(a[:-1] + ".py") or os.path.isfile(a[:-1] + ".txt"): return a[:-1]
     else:
         return a
 
@@ -27,8 +26,6 @@ readline.set_completer(complete)
 # end tab completion
 
 # color scheme for core
-
-
 class bcolors:
     PURPLE = '\033[95m'
     CYAN = '\033[96m'
@@ -51,11 +48,18 @@ class bcolors:
 
 # custom parser for zaproxy
 def zaproxy():
-    file = urllib.urlopen('https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions.xml')
-    data = file.readlines()
-    file.close()
-    for url in data:
-        if "Linux.tar.gz" in url and "<url>" in url: return url.rstrip().replace("<url>", "").replace("</url>", "").strip()
+    if sys.version_info > (3,0):
+        file = urllib.request.urlopen('https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions.xml')
+        data = file.readlines()
+        file.close()
+        for url in data:
+            if b'Linux.tar.gz' in url and b'<url>' in url: return url.decode('utf-8').replace("<url>", "").replace("</url>", "").strip()
+    else:
+        file = urllib.urlopen('https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions.xml')
+        data = file.readlines()
+        file.close()
+        for url in data:
+            if "Linux.tar.gz" in url and "<url>" in url: return url.rstrip().replace("<url>", "").replace("</url>", "").strip()
 
 
 # get the main SET path
@@ -110,34 +114,31 @@ def count_modules():
     return counter
 
 # version information
-grab_version = "2.2"
+grab_version = "2.4.5"
 
 # banner
 banner = bcolors.RED + r"""
-
-                     ______  __ __    ___
-                    |      T|  T  T  /  _]
-                    |      ||  l  | /  [_
-                    l_j  l_j|  _  |Y    _]
-                      |  |  |  |  ||   [_
-                      |  |  |  |  ||     T
-                      l__j  l__j__jl_____j
-
- ____     ___  ____   ______    ___   _____ ______    ___  ____    _____
-|    \   /  _]|    \ |      T  /  _] / ___/|      T  /  _]|    \  / ___/
-|  o  ) /  [_ |  _  Y|      | /  [_ (   \_ |      | /  [_ |  D  )(   \_
-|   _/ Y    _]|  |  |l_j  l_jY    _] \__  Tl_j  l_jY    _]|    /  \__  T
-|  |   |   [_ |  |  |  |  |  |   [_  /  \ |  |  |  |   [_ |    \  /  \ |
-|  |   |     T|  |  |  |  |  |     T \    |  |  |  |     T|  .  Y \    |
-l__j   l_____jl__j__j  l__j  l_____j  \___j  l__j  l_____jl__j\_j  \___j
-
- _____  ____    ____  ___ ___    ___  __    __   ___   ____   __  _
-|     ||    \  /    T|   T   T  /  _]|  T__T  T /   \ |    \ |  l/ ]
-|   __j|  D  )Y  o  || _   _ | /  [_ |  |  |  |Y     Y|  D  )|  ' /
-|  l_  |    / |     ||  \_/  |Y    _]|  |  |  ||  O  ||    / |    \
-|   _] |    \ |  _  ||   |   ||   [_ l  `  '  !|     ||    \ |     Y
-|  T   |  .  Y|  |  ||   |   ||     T \      / l     !|  .  Y|  .  |
-l__j   l__j\_jl__j__jl___j___jl_____j  \_/\_/   \___/ l__j\_jl__j\_j
+                ████████╗██╗  ██╗███████╗                                     
+                ╚══██╔══╝██║  ██║██╔════╝                                     
+                   ██║   ███████║█████╗                                       
+                   ██║   ██╔══██║██╔══╝                                       
+                   ██║   ██║  ██║███████╗                                     
+                   ╚═╝   ╚═╝  ╚═╝╚══════╝                                     
+                                                                              
+██████╗ ███████╗███╗   ██╗████████╗███████╗███████╗████████╗███████╗██████╗   
+██╔══██╗██╔════╝████╗  ██║╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██╔════╝██╔══██╗  
+██████╔╝█████╗  ██╔██╗ ██║   ██║   █████╗  ███████╗   ██║   █████╗  ██████╔╝  
+██╔═══╝ ██╔══╝  ██║╚██╗██║   ██║   ██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══██╗  
+██║     ███████╗██║ ╚████║   ██║   ███████╗███████║   ██║   ███████╗██║  ██║  
+╚═╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝  
+                                                                              
+███████╗██████╗  █████╗ ███╗   ███╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗
+██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝
+█████╗  ██████╔╝███████║██╔████╔██║█████╗  ██║ █╗ ██║██║   ██║██████╔╝█████╔╝ 
+██╔══╝  ██╔══██╗██╔══██║██║╚██╔╝██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██╔═██╗ 
+██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗
+╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+                                                                              
 """
 
 banner += bcolors.ENDC + """
@@ -148,8 +149,8 @@ banner += bcolors.ENDC + """Framework\n\n"""
 banner += """        		   """ + bcolors.backBlue + \
     """Version: %s""" % (grab_version) + bcolors.ENDC + "\n"
 
-banner += bcolors.YELLOW + bcolors.BOLD + """		    Codename: """ + \
-    bcolors.BLUE + """Tool Haven""" + "\n"
+banner += bcolors.YELLOW + bcolors.BOLD + """		        Codename: """ + \
+    bcolors.BLUE + """Toolsmith""" + "\n"
 
 banner += """		         """ + bcolors.ENDC + bcolors.backRed + \
     """Red Team Approved""" + bcolors.ENDC + "\n"
@@ -221,7 +222,7 @@ def module_parser(filename, term):
             filename_short = filename.replace(definepath() + "/", "")
             filename_short = filename_short.replace(".py", "")
             if term not in "BYPASS_UPDATE|LAUNCHER|TOOL_DEPEND|X64_LOCATION|install_update_all|FEDORA|OPENBSD|ARCHLINUX":
-                              if filename_short not in "__init__|msfdb.sh":
+                              if filename_short not in "__init__|msfdb.sh|modules/custom_list/list":
                                         print_error("Warning, module %s was found but contains no %s field." % (filename_short, term))
                                         print_error("Check the module again for errors and try again.")
                                         print_error("Module has been removed from the list.")
@@ -392,7 +393,7 @@ def launcher(filename, install_location):
 
 # search functionality here
 def search(term):
-    term = term.replace("search ", "")
+    term = term.replace("search ", "").lower() # Make the text in search lower for case sensitive
     module_files = []
     if "update" in term or "install" in term:
         module_files.append("modules/install_update_all")
@@ -408,7 +409,7 @@ def search(term):
                             module_files.append(os.path.join(dirpath, x))
 
                         if not term in path:
-                            data = open(path, "r").readlines()
+                            data = open(path, "r", encoding="utf-8").readlines()
                             # normally just searched entire file, but we don't
                             # want to search # lines
                             for line in data:
@@ -448,11 +449,9 @@ def auto_update():
 
 # check if a blank directory exists
 def check_blank_dir(path):
-
     if os.path.isdir(path):
         if os.listdir(path) == []:
-            print_status(
-                "Detected an empty folder, purging and re-checking out...")
+            print_status("Detected an empty folder, purging and re-checking out...")
             subprocess.Popen("rm -rf %s" % (path), shell=True).wait()
 
         # we put a second one in there in case the path was removed from above

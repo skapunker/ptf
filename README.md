@@ -2,7 +2,7 @@
 The PenTesters Framework (PTF)
 ===
 
-#### A TrustedSec Project - Copyright 2018
+#### A TrustedSec Project - Copyright 2020
 
 ### Written by: David Kennedy (@HackingDave)
 
@@ -15,6 +15,17 @@ The PenTesters Framework (PTF) is a Python script designed for Debian/Ubuntu/Arc
 PTF attempts to install all of your penetration testing tools (latest and greatest), compile them, build them, and make it so that you can install/update your distribution on any machine. Everything is organized in a fashion that is cohesive to the Penetration Testing Execution Standard (PTES) and eliminates a lot of things that are hardly used. PTF simplifies installation and packaging and creates an entire pentest framework for you. Since this is a framework, you can configure and add as you see fit. We commonly see internally developed repos that you can use as well as part of this framework. It's all up to you.
 
 The ultimate goal is for community support on this project. We want new tools added to the github repository. Submit your modules. It's super simple to configure and add them and only takes a few minute.
+
+### Installation
+
+PTF requires python-pexpect in order to work appropriately. 
+
+Run the following command below:
+
+```
+pip install -r requirements.txt
+./ptf
+```
 
 ### Instructions:
 
@@ -56,6 +67,33 @@ use modules/exploitation/install_update_all
 ```
 
 This will only install the exploitation modules. You can do this for any module category.
+
+### Customize your own installed tools
+
+You can install only the tools you want to by going to the modules/custom_list/list.txt section. Modify the list.txt file and add the tools you only want to install or update.
+
+Example list.txt file:
+
+modules/exploitation/metasploit
+modules/post-exploitation/unicorn
+
+Then when in PTF:
+
+```
+./ptf
+use modules/custom_list/list
+yes
+```
+
+This allows you to carry your module configuration over and only install the tools that you want and keep them updated.
+
+You can also simply specify a module without using the category:
+
+```
+./ptf
+use trevorc2
+yes
+```
 
 ### Modules:
 
@@ -100,6 +138,10 @@ You can also specify `{PTF_LOCATION}` which will pull the base path for your PTF
 You also have the ability for repository locations to specify both a 32 bit and 64 bit location. Repository location should always be the x86 download path. To add a 64 bit path for a tool, specify X64_LOCATION and give it a URL. When PTF launches it will automatically detect the architecture and attempt to use the x64 link instead of the x86.
 
 Note that ArchLinux packages are also supported, it needs to be specified for both DEBIAN and ARCH in order for it to be properly installed on either platform in the module
+
+### GITLAB Support
+
+You can create your own modules and PTF also supports gitlab access. Instead of specifying git, wget, etc., simply specify gitlab and point to your own internal gitlab tools for modules.
 
 ### BYPASS UPDATES:
 
@@ -154,6 +196,17 @@ The `IGNORE_UPDATE_ALL_MODULES=` config option can be found under config/ptf.con
 
 ### INCLUDE_ONLY_THESE_MODULES
 
-The `INCLUDE_ONLY_THESE_MODULES` in the config option under config/ptf.config will only install and include specific modules that is specified here. This is good for baselining your tools that you want and only install them.
+The `INCLUDE_ONLY_THESE_MODULES` in the config option under config/ptf.config will only install and include specific modules that are specified here. This is good for baselining the tools that you want and install only them.
 
 
+### LAUNCH PTF WITH NO BANNER
+
+You can launch PTF with no banner message if you want. Simply specify:
+
+```
+./ptf --no-banner
+
+or 
+
+./ptf -nb
+```
